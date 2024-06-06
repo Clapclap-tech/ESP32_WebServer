@@ -6,6 +6,8 @@ const char* password = "gvSbjXp4";
 
 WebServer server(80);
 
+String webpage = "<!DOCTYPE html><html lang='en'><head> <meta charset='UTF-8'> <meta name='viewport' content='width=device-width, initial-scale=1.0'> <title>Document</title></head><body> <h1>Test</h1> <h1>ESP32</h1></body></html>";
+
 String header;
 
 String outputState26 = "off";
@@ -20,8 +22,9 @@ void setup() {
   /* ----------- WIFI CONNECTION -------------------- */
   Serial.print("Connecting to ");
   Serial.println(ssid);
-
+  //wifi connect with ssid & password
   WiFi.begin(ssid, password);
+  //loading for wifi status if esp is connected to wifi
   while (WiFi.status() != WL_CONNECTED){
     delay(500);
     Serial.print(".");
@@ -30,14 +33,16 @@ void setup() {
   Serial.println("");
   Serial.println("WiFi Connected");
   Serial.println("IP address: ");
+  //get ip
   Serial.println(WiFi.localIP());
-  server.begin();
   /* -----------------------------------------------*/
 
-
-
+  server.on("/", []() {
+    server.send(200, "text\html", webpage);
+  });
+  server.begin();
 }
 
 void loop() {
-
+  server.handleClient();
 }
