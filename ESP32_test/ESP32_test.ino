@@ -1,9 +1,10 @@
 #include <WiFi.h>
+#include <WebServer.h>
 
 const char* ssid = "ZTE_2.4G_UPGL5Y";
 const char* password = "gvSbjXp4";
 
-WiFiServer server(80);
+WebServer server(80);
 
 String header;
 
@@ -16,7 +17,7 @@ void setup() {
   
   pinMode(output26, OUTPUT);
   digitalWrite(output26, LOW);
-
+  /* ----------- WIFI CONNECTION -------------------- */
   Serial.print("Connecting to ");
   Serial.println(ssid);
 
@@ -31,7 +32,7 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
   server.begin();
-
+  /* -----------------------------------------------*/
 
 
 
