@@ -9,8 +9,7 @@ WebServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
 
 //------------------htmlcode----------------------//
-
-String webpage = "<!DOCTYPE html><html lang='en'><head> <meta charset='UTF-8'> <meta name='viewport' content='width=device-width, initial-scale=1.0'> <title>Document</title></head><body> <h1>RANDOM NUMBER GENERATOR</h1> <h3>RANDOM NUMBER: <span id='rand'>-</span> </h3></body><script> let Socket; function init() { Socket = new WebSocket('ws://' + Window.location.hostname + ':81/'); } function processCommand(event) { document.getElementById('rand').innerHTML = event.data; } window.onload = function(event) { init(); }</script></html>";
+String webpage = "<!DOCTYPE html><html lang='en'><head> <meta charset='UTF-8'> <meta name='viewport' content='width=device-width, initial-scale=1.0'> <title>Document</title></head><body> <h1>RANDOM NUMBER GENERATOR</h1> <h3>RANDOM NUMBER: <span id='rand'>-</span></h3></body><script> var Socket; function init() { Socket = new WebSocket('ws://' + window.location.hostname + ':81/'); Socket.onmessage = function(event) { processCommand(event); }; } function processCommand(event) { document.getElementById('rand').innerHTML = event.data; console.log(event.data); } window.onload = function(event) { init(); }</script></html>";
 //------------------------------------------------//
 
 int interval = 1000;
@@ -58,8 +57,8 @@ void loop() {
 
   unsigned long currentTime = millis();
   if (currentTime - previousMillis > interval) {
-    String str = (random(100));
-    int str_len = str.legnth() + 1;
+    String str = String(random(100));
+    int str_len = str.length() + 1;
     char char_array[str_len];
     str.toCharArray(char_array, str_len);
     webSocket.broadcastTXT(char_array);
