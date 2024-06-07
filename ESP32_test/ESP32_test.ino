@@ -1,12 +1,20 @@
 #include <WiFi.h>
 #include <WebServer.h>
+#include <WebSocketsServer.h>
 
 const char* ssid = "ZTE_2.4G_UPGL5Y";
 const char* password = "gvSbjXp4";
 
 WebServer server(80);
+WebSocketsServer webSocket = WebSocketsServer(81);
 
-String webpage = "<!DOCTYPE html><html lang='en'><head> <meta charset='UTF-8'> <meta name='viewport' content='width=device-width, initial-scale=1.0'> <title>Document</title></head><body> <h1>Test</h1> <h1>ESP32</h1></body></html>";
+//------------------htmlcode----------------------//
+
+String webpage = "<!DOCTYPE html><html lang='en'><head> <meta charset='UTF-8'> <meta name='viewport' content='width=device-width, initial-scale=1.0'> <title>Document</title></head><body> <h1>RANDOM NUMBER GENERATOR</h1> <h3>RANDOM NUMBER: <span id='rand'>-</span> </h3></body><script> let Socket; function init() { Socket = new WebSocket('ws://' + Window.location.hostname + ':81/'); } function processCommand(event) { document.getElementById('rand').innerHTML = event.data; } window.onload = function(event) { init(); }</script></html>";
+//------------------------------------------------//
+
+int interval = 1000;
+unsigned long previousMillis = 0;
 
 String header;
 
@@ -36,13 +44,25 @@ void setup() {
   //get ip
   Serial.println(WiFi.localIP());
   /* -----------------------------------------------*/
-
+  //initiate webpage
   server.on("/", []() {
     server.send(200, "text\html", webpage);
   });
   server.begin();
+  webSocket.begin();
 }
 
 void loop() {
   server.handleClient();
+  webSocket.loop();
+
+  unsigned long currentTime = millis();
+  if (currentTime - previousMillis > interval) {
+    String str = (random(100));
+    int str_len = str.legnth() + 1;
+    char char_array[str_len];
+    str.toCharArray(char_array, str_len);
+    webSocket.broadcastTXT(char_array);
+    previousMillis = currentTime;
+  }
 }
